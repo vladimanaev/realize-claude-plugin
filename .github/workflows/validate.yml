@@ -1,0 +1,89 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate JSON files
+        run: |
+          set -euo pipefail
+          for f in .claude-plugin/plugin.json .mcp.json; do
+            echo "Checking $f"
+            python3 -m json.tool "$f" > /dev/null
+          done
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Validate YAML frontmatter on agents and skills
+        run: |
+          python3 - <<'PY'
+          import os, sys, yaml
+
+          # Required key -> expected type (None means any type)
+          AGENT_REQUIRED = {
+              "name": str,
+              "description": str,
+              "model": str,
+              "tools": list,
+          }
+          SKILL_REQUIRED = {
+              "name": str,
+              "description": str,
+              "allowed-tools": list,
+          }
+
+          errors = []
+
+          def check(path, required):
+              with open(path, "r", encoding="utf-8") as fh:
+                  text = fh.read()
+              if not text.startswith("---"):
+                  errors.append(f"{path}: missing YAML frontmatter")
+                  return
+              parts = text.split("---", 2)
+              if len(parts) < 3:
+                  errors.append(f"{path}: unterminated frontmatter")
+                  return
+              try:
+                  meta = yaml.safe_load(parts[1]) or {}
+              except yaml.YAMLError as e:
+                  errors.append(f"{path}: invalid YAML ({e})")
+                  return
+              for key, expected_type in required.items():
+                  if key not in meta:
+                      errors.append(f"{path}: missing required key '{key}'")
+                  elif expected_type is not None and not isinstance(meta[key], expected_type):
+                      errors.append(
+                          f"{path}: key '{key}' must be {expected_type.__name__}, "
+                          f"got {type(meta[key]).__name__}"
+                      )
+
+          for root, _, files in os.walk("agents"):
+              for f in files:
+                  if f.endswith(".md"):
+                      check(os.path.join(root, f), AGENT_REQUIRED)
+
+          for root, _, files in os.walk("skills"):
+              for f in files:
+                  if f == "SKILL.md":
+                      check(os.path.join(root, f), SKILL_REQUIRED)
+
+          if errors:
+              print("\n".join(errors))
+              sys.exit(1)
+          print("All frontmatter valid.")
+          PY
