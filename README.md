@@ -19,7 +19,7 @@ Choose the path that matches how you consume Claude Code plugins:
 ### Option A — Install from a marketplace *(recommended)*
 
 ```bash
-claude plugin i realize
+claude plugin i realize-ads-api
 ```
 
 That single command installs everything — the `realize-analyst` agent, the four skills, and the Realize MCP wiring. On the first tool call, Claude Code opens a browser for Taboola SSO to complete OAuth 2.1; after that you're ready to run prompts like *"List my Realize accounts"*.

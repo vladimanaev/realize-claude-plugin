@@ -1,5 +1,5 @@
 {
-  "name": "realize",
+  "name": "realize-ads-api",
   "version": "0.1.0",
   "description": "Query Taboola Realize campaigns and pull performance reports through natural language — powered by the Realize remote MCP.",
   "author": {
