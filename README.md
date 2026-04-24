@@ -16,9 +16,15 @@ The plugin ships with the remote Realize MCP pre-wired. No local setup required 
 
 Choose the path that matches how you consume Claude Code plugins:
 
-### Option A — Install from a marketplace
+### Option A — Install from a marketplace *(recommended)*
 
-Once this plugin is published to a Claude Code plugin marketplace, install it with the standard plugin flow (see the [Claude Code plugin docs](https://code.claude.com/docs/en/plugins) for the current command shape for your version). Claude Code reads this repo's `.claude-plugin/plugin.json` and `.mcp.json` on install and wires everything up.
+```bash
+claude plugin i realize
+```
+
+That single command installs everything — the `realize-analyst` agent, the four skills, and the Realize MCP wiring. On the first tool call, Claude Code opens a browser for Taboola SSO to complete OAuth 2.1; after that you're ready to run prompts like *"List my Realize accounts"*.
+
+> Requires the plugin to be registered with a Claude Code plugin marketplace your CLI has access to. See [Claude Code plugin docs](https://code.claude.com/docs/en/plugins) for the marketplace configuration specific to your Taboola distribution.
 
 ### Option B — Local development / custom loading
 
