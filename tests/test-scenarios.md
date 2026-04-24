@@ -124,15 +124,55 @@ Manual QA checklist. Run each scenario against a real Realize test account and c
 ## 9. Write-intent request → create-campaign skill
 
 **User prompt:**
-> "Create a new prospecting campaign with a $500/day budget targeting the US."
+> "Create a new Online Purchases campaign with a $25 CPA target."
 
 **Expected behavior:**
 1. The `create-campaign` skill activates.
 2. Claude states up-front that no MCP tool currently exists for creating a campaign, and offers to walk the user through the Realize console instead.
-3. Walks through the UI steps (Campaigns → New Campaign → objective → budget → targeting → creatives → Launch).
-4. Offers to verify via `get_campaign` once the user says they've created it.
+3. Asks for the required fields from Taboola's setup guide: **Campaign Name**, **Branding Text**, **Marketing Objective** (offers the 5-value enum: Reach / Engagement / Leads / Online Purchases / App Promotion), **Bid Strategy** (Maximize Conversions / Enhanced CPC / Fixed Bid), and Budget.
+4. Applies the bid-strategy budget rule: for **Maximize Conversions** with a $25 CPA target, recommends **≥$250/day** (10× CPA). For Enhanced CPC / Fixed Bid, recommends **≥$125/day** (5× CPA) with a $3,750 monthly minimum (150× CPA).
+5. Walks through the UI navigation path `Campaigns → +New → Campaign`, covering the required and optional sections, and recommends **leaving targeting / audiences / blocklists broad** at launch (per official guide).
+6. Calls out the **24–48 hour review** and the **7–10 day learning phase** before offering a follow-up optimization.
+7. Offers to verify via `get_campaign(account_id=..., campaign_id=...)` once the campaign clears review.
 
-**Pass criteria:** **Claude does not fabricate a tool call for an action the MCP doesn't support.** No invented parameters, no made-up tool names. UI walkthrough is offered.
+**Pass criteria:** **Claude does not fabricate a tool call for an action the MCP doesn't support.** Budget minimums are enforced against the CPA target (not guessed). Targeting guidance matches the official "stay broad at launch" recommendation. The 24–48 hr review and 7–10 day learning phase are both surfaced.
+
+---
+
+## 9a. Optimization request — adequate data
+
+**Prerequisite:** A campaign with at least two items, one with ≥500 clicks and clearly worse CVR than its siblings.
+
+**User prompt:**
+> "Campaign 12345 is underperforming. What should I do?"
+
+**Expected behavior:**
+1. The `optimize-campaign` skill activates.
+2. Claude resolves `account_id`, then pulls `get_campaign_breakdown_report` and `get_campaign_site_day_breakdown_report` for the campaign, plus `get_top_campaign_content_report` at the account level for context. Date window is echoed in the summary.
+3. Checks thresholds before prescribing: confirms daily spend ≥$50 and at least one item has ≥500–1000 clicks. If either is missing, says so explicitly and does not prescribe.
+4. Classifies the failure mode against the prescription rules (CTR × CVR × CPA) and names it (e.g., "High CTR, low conversion rate — this is typically a landing-page or creative-honesty issue, not a bid issue").
+5. Prescribes a concrete UI action with the exact console path (e.g., "Pause item 887003: Campaigns → open 12345 → Campaign Inventory → toggle item status").
+6. Offers to re-verify via MCP after the user applies the change AND 3–7 days of fresh data have accrued.
+
+**Pass criteria:** Classification cites at least two of CTR / CVR / CPA with real numbers. Prescription includes a specific console path. Claude does **not** recommend simply "raise the bid" as the first response to high CPA.
+
+---
+
+## 9b. Optimization request — insufficient data (learning phase)
+
+**Prerequisite:** A campaign <7 days old, or one with <500 total clicks.
+
+**User prompt:**
+> "Why is my brand-new campaign not getting conversions? Should I pause it?"
+
+**Expected behavior:**
+1. The `optimize-campaign` skill activates.
+2. Claude pulls the campaign's history via MCP, sees the data is thin (either the age window or the click total is under threshold), and **refuses to prescribe**.
+3. Surfaces the specific threshold that was missed: "the algorithm's learning phase is 7–10 days" or "Taboola recommends at least 500–1000 clicks per item before judging performance".
+4. If spend is below $50/day, recommends **increasing the daily budget** before drawing any further conclusions.
+5. Offers to revisit the diagnosis once the threshold is met.
+
+**Pass criteria:** Claude does **not** recommend a pause, bid change, or targeting change on insufficient data. Names the exact threshold(s) that haven't been met.
 
 ---
 

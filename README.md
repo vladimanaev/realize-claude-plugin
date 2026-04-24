@@ -80,7 +80,8 @@ For self-hosted HTTP mode and full local deployment details, see the [realize-mc
 | [`accounts`](skills/accounts/SKILL.md) | Find Realize accounts and capture the `account_id` every other tool needs |
 | [`campaigns`](skills/campaigns/SKILL.md) | List and inspect campaigns and their creatives |
 | [`reports`](skills/reports/SKILL.md) | Pull the four Realize performance reports and interpret the CSV output |
-| [`create-campaign`](skills/create-campaign/SKILL.md) | UI walkthrough for campaign actions not yet exposed as MCP tools, plus MCP verification afterward |
+| [`optimize-campaign`](skills/optimize-campaign/SKILL.md) | Diagnose underperforming campaigns against Taboola's official playbook (500–1000 clicks per item, $50/day minimum, 7–10 day learning phase) and prescribe concrete UI actions |
+| [`create-campaign`](skills/create-campaign/SKILL.md) | Walk through the Realize console setup flow (exact Marketing Objective enum, Bid Strategy × budget minimums, learning-phase defaults) for actions not yet exposed as MCP tools, plus MCP verification afterward |
 
 The plugin also ships one agent, [`realize-analyst`](agents/realize-analyst.md), which routes natural-language questions to the right skill/tool and summarizes results in prose.
 
@@ -93,7 +94,16 @@ The plugin also ships one agent, [`realize-analyst`](agents/realize-analyst.md),
 "Break down spend by campaign for the last 30 days."
 "Why is CPC up on campaign 12345 this week?"
 "Show me the top 50 site/day rows for campaign 12345."
-"Create a new prospecting campaign with $500/day budget."   # → UI walkthrough
+
+# optimization
+"My campaign 12345 is burning budget with no conversions — what should I do?"
+"Which items on campaign 67890 should I pause?"
+"Which sites are wasting my spend this month?"
+"My CPA doubled over the last two weeks. Help me diagnose."
+
+# setup (UI walkthrough)
+"Create a new Online Purchases campaign with a $25 CPA target."
+"Walk me through launching a Leads campaign in the UK."
 ```
 
 ## Configuration Reference
