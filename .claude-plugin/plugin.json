@@ -1,0 +1,20 @@
+{
+  "name": "realize",
+  "version": "0.1.0",
+  "description": "Query Taboola Realize campaigns and pull performance reports through natural language — powered by the Realize remote MCP.",
+  "author": {
+    "name": "Taboola"
+  },
+  "homepage": "https://github.com/taboola/realize-claude-plugin",
+  "repository": "https://github.com/taboola/realize-claude-plugin",
+  "license": "Apache-2.0",
+  "keywords": [
+    "taboola",
+    "realize",
+    "advertising",
+    "campaigns",
+    "reporting",
+    "mcp",
+    "analytics"
+  ]
+}

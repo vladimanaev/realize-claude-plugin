@@ -1,0 +1,24 @@
+# Per-user plugin state (account defaults, session prefs)
+.claude/*.local.md
+
+# Claude Code tooling caches
+.agent-mail/
+.a5c/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node (if contributors add tooling later)
+node_modules/
+
+# Python (if contributors experiment with validators)
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Editors
+.idea/
+.vscode/
+*.swp

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "realize-mcp": {
+      "type": "streamable-http",
+      "url": "https://mcp.realize.com/mcp"
+    }
+  }
+}
